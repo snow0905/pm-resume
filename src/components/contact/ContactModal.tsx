@@ -3,6 +3,7 @@
 import { useEffect, useCallback, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import { X, Phone, Mail, MessageCircle, Copy, Check } from "lucide-react";
 import { profile } from "@/data/profile";
 
@@ -14,12 +15,14 @@ interface ContactModalProps {
 /** 照片 */
 function ModalPhoto() {
   return (
-    <div className="contact-modal-photo">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+    <div className="contact-modal-photo relative aspect-[3/4] min-h-[200px]">
+      <Image
         src="/形象照.jpg"
         alt="个人照片"
-        className="w-full h-full object-cover rounded-2xl"
+        fill
+        sizes="(max-width: 768px) 100vw, 320px"
+        className="object-cover rounded-2xl"
+        priority={false}
       />
     </div>
   );

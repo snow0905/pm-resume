@@ -23,7 +23,7 @@ export default function HeroWorkbenchVideo({
           muted
           loop
           playsInline
-          preload="auto"
+          preload="metadata"
           poster={poster}
           className="hero-workbench-video-media"
         >

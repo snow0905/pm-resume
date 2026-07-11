@@ -1,17 +1,20 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import Image from "next/image";
 import { Phone, Mail, MessageCircle, Copy, Check } from "lucide-react";
 import { profile } from "@/data/profile";
 
 function ContactPhoto() {
   return (
-    <div className="contact-photo-area">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+    <div className="contact-photo-area relative aspect-[3/4] min-h-[300px]">
+      <Image
         src="/形象照.jpg"
         alt="个人照片"
-        className="w-full h-full object-cover rounded-2xl"
+        fill
+        sizes="(max-width: 768px) 100vw, 380px"
+        className="object-cover rounded-2xl"
+        priority={false}
       />
     </div>
   );

@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, lazy, Suspense } from "react";
 import { motion } from "framer-motion";
 import HeroIntro from "@/components/hero/HeroIntro";
 import JdMatcherCard from "@/components/hero/JdMatcherCard";
-import JdMatchModal from "@/components/hero/JdMatchModal";
 import HeroWorkbenchVideo from "@/components/hero/HeroWorkbenchVideo";
 import ContactModal from "@/components/contact/ContactModal";
+
+const JdMatchModal = lazy(() => import("@/components/hero/JdMatchModal"));
 import type { MatchResult, MatchModalState } from "@/types";
 
 const JD_MAX_LENGTH = 8000;
@@ -152,14 +153,18 @@ export default function HeroSection() {
         </motion.div>
       </div>
 
-      {/* ===== JD 匹配弹窗 ===== */}
-      <JdMatchModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        state={matchState as "loading" | "result" | "error"}
-        result={matchResult}
-        onRetry={handleRetry}
-      />
+      {/* ===== JD 匹配弹窗 — 按需加载 ===== */}
+      {isModalOpen && (
+        <Suspense fallback={null}>
+          <JdMatchModal
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+            state={matchState as "loading" | "result" | "error"}
+            result={matchResult}
+            onRetry={handleRetry}
+          />
+        </Suspense>
+      )}
 
       {/* ===== 联系我弹窗 ===== */}
       <ContactModal

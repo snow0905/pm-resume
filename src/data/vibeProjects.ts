@@ -24,7 +24,7 @@ export const vibeProjects: VibeProjectItem[] = [
     description:
       "面向高频收藏生活信息的用户，支持截图、链接和文字随手收纳。AI 自动识别主题、生成标签、沉淀灵感，并将碎片内容转化为旅行、购物、餐厅等可行动生活清单。",
     tags: ["AI Agent", "生活收藏", "信息整理"],
-    demoUrl: "http://localhost:3000/demo/inspiration-garden",
+    demoUrl: "https://inspire-garden.vercel.app/demo/inspiration-garden",
     visualUrl: "/灵感花园首页.jpg",
   },
 ];

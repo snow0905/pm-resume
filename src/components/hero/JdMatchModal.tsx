@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useCallback, useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import {
   Loader2,
   X,
@@ -916,29 +916,29 @@ function getLoadingStage(elapsed: number): {
 // ================================================================
 // 动画变体
 // ================================================================
-const overlayVariants = {
+const overlayVariants: Variants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1 },
   exit: { opacity: 0 },
 };
 
-const contentVariants = {
+const contentVariants: Variants = {
   hidden: { opacity: 0, scale: 0.96, y: 24 },
   visible: {
     opacity: 1,
     scale: 1,
     y: 0,
-    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const },
   },
   exit: {
     opacity: 0,
     scale: 0.96,
     y: 24,
-    transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] as const },
   },
 };
 
-const staggerItem = (delay: number) => ({
+const staggerItem = (delay: number): Variants => ({
   hidden: { opacity: 0, y: 12 },
   visible: {
     opacity: 1,

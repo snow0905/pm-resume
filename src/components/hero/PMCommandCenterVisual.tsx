@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import {
   FileText,
   GitBranch,
@@ -97,20 +97,20 @@ function AbstractUIBlocks() {
   );
 }
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: {},
   visible: {
     transition: { staggerChildren: 0.12 },
   },
 };
 
-const cardVariants = {
+const cardVariants: Variants = {
   hidden: { opacity: 0, scale: 0.6, y: 20 },
   visible: {
     opacity: 1,
     scale: 1,
     y: 0,
-    transition: { duration: 0.5, ease: [0.22, 0.61, 0.36, 1] },
+    transition: { duration: 0.5, ease: [0.22, 0.61, 0.36, 1] as const },
   },
 };
 
@@ -145,7 +145,7 @@ export default function PMCommandCenterVisual() {
             transition={{
               duration: 1,
               delay: 0.6 + i * 0.1,
-              ease: [0.22, 0.61, 0.36, 1],
+              ease: [0.22, 0.61, 0.36, 1] as const,
             }}
           />
         ))}

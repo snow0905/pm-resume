@@ -10,6 +10,8 @@ import { buildMatchMessages } from "@/lib/prompts/jobMatchPrompt";
 import { resumeMatchProfile } from "@/data/resumeMatchProfile";
 import { validateMatchResult } from "@/lib/schemas/matchResultSchema";
 
+const DEFAULT_DASHSCOPE_REQUEST_TIMEOUT_MS = 60_000;
+
 // ================================================================
 // 模式开关：仅显式配置 USE_MOCK_MATCH=true 时使用 mock。
 // 未配置或其他值均调用真实 AI，避免生产环境误返回固定样例。
@@ -158,6 +160,16 @@ function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function getDashScopeRequestTimeoutMs(): number {
+  const configuredTimeout = Number(
+    process.env.DASHSCOPE_REQUEST_TIMEOUT_MS,
+  );
+
+  return Number.isFinite(configuredTimeout) && configuredTimeout > 0
+    ? configuredTimeout
+    : DEFAULT_DASHSCOPE_REQUEST_TIMEOUT_MS;
+}
+
 // ================================================================
 // 真实 AI 调用
 // ================================================================
@@ -192,7 +204,7 @@ async function requestRealJobMatch(jobDescription: string): Promise<MatchResult>
       temperature: 0.3,
       thinking: { type: "disabled" },
     }),
-    signal: AbortSignal.timeout(30000),
+    signal: AbortSignal.timeout(getDashScopeRequestTimeoutMs()),
   });
 
   if (!apiResponse.ok) {

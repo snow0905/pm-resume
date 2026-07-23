@@ -7,6 +7,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { matchJob } from "@/lib/services/matchJob";
 
+export const maxDuration = 90;
+
 const JD_MAX_LENGTH = 8000;
 
 export async function POST(request: NextRequest) {
@@ -32,7 +34,10 @@ export async function POST(request: NextRequest) {
     const result = await matchJob(jd);
     return NextResponse.json(result);
   } catch (err) {
-    if (err instanceof Error && err.name === "AbortError") {
+    if (
+      err instanceof Error &&
+      (err.name === "AbortError" || err.name === "TimeoutError")
+    ) {
       return NextResponse.json(
         { error: "匹配分析超时，请稍后重试" },
         { status: 500 },

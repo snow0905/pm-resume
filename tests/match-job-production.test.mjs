@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
+import { createServer } from "node:http";
 import test from "node:test";
 import { buildSystemPrompt } from "../src/lib/prompts/jobMatchPrompt.ts";
 
@@ -96,6 +97,81 @@ test(
     } finally {
       server.kill("SIGTERM");
       await new Promise((resolve) => server.once("close", resolve));
+    }
+  },
+);
+
+test(
+  "a timed out model request returns a specific timeout error",
+  { timeout: 40_000 },
+  async () => {
+    const appPort = 3119;
+    const fakeApiPort = 3120;
+    const fakeApi = createServer(() => {
+      // Keep the response open so the application timeout must cancel it.
+    });
+
+    await new Promise((resolve) =>
+      fakeApi.listen(fakeApiPort, host, resolve),
+    );
+
+    const env = {
+      ...process.env,
+      NODE_ENV: "production",
+      DASHSCOPE_API_KEY: "test-key",
+      DASHSCOPE_BASE_URL: `http://${host}:${fakeApiPort}`,
+      DASHSCOPE_REQUEST_TIMEOUT_MS: "100",
+    };
+    delete env.USE_MOCK_MATCH;
+
+    const processOutput = [];
+    const server = spawn(
+      process.execPath,
+      [
+        "./node_modules/next/dist/bin/next",
+        "dev",
+        "--hostname",
+        host,
+        "--port",
+        String(appPort),
+      ],
+      {
+        cwd: process.cwd(),
+        env,
+        stdio: ["ignore", "pipe", "pipe"],
+      },
+    );
+
+    server.stdout.on("data", (chunk) => processOutput.push(chunk.toString()));
+    server.stderr.on("data", (chunk) => processOutput.push(chunk.toString()));
+
+    try {
+      const appUrl = `http://${host}:${appPort}`;
+      const deadline = Date.now() + 30_000;
+      while (Date.now() < deadline) {
+        try {
+          const response = await fetch(appUrl);
+          if (response.ok) break;
+        } catch {
+          await new Promise((resolve) => setTimeout(resolve, 250));
+        }
+      }
+
+      const response = await fetch(`${appUrl}/api/match-job`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jd: "测试岗位 JD" }),
+      });
+      const body = await response.json();
+
+      assert.equal(response.status, 500);
+      assert.equal(body.error, "匹配分析超时，请稍后重试");
+    } finally {
+      server.kill("SIGTERM");
+      await new Promise((resolve) => server.once("close", resolve));
+      await new Promise((resolve, reject) =>
+        fakeApi.close((error) => (error ? reject(error) : resolve())),
+      );
     }
   },
 );

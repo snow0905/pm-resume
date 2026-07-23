@@ -30,8 +30,80 @@ export function buildSystemPrompt(): string {
 - 不得编造简历中不存在的信息。
 - 综合分 overallScore 必须根据四个维度按权重计算，不得显著偏离加权平均值。
 - 如果某方面证据不足，请在 concerns 数组中说明待确认点。
+- jdEvidence 只能摘录或忠实概括本次输入的岗位 JD，不得使用示例岗位或自行补充岗位要求。
+- highlights 必须有 2-3 条，concerns 必须有 1-2 条。
+- scorePercent 与同一维度的 finalScore 必须相同。
 - 全部使用中文。
-- 只输出 JSON，不要输出 Markdown 代码块标记，不要输出解释文字。`;
+- 只输出 JSON，不要输出 Markdown 代码块标记，不要输出解释文字。
+
+## 必须遵守的 JSON 结构
+
+最外层必须直接使用以下结构和字段名，不得改名、嵌套到其他对象或改用 dimensionScores：
+
+{
+  "overallScore": 0,
+  "conclusion": "不超过300字的匹配结论",
+  "highlights": ["匹配亮点1", "匹配亮点2"],
+  "concerns": ["待确认点1"],
+  "dimensions": [
+    {
+      "id": "businessScenario",
+      "key": "businessScenario",
+      "title": "业务场景匹配度",
+      "scorePercent": 0,
+      "weight": 0.25,
+      "summary": "本维度摘要",
+      "jdEvidence": ["本次JD要求摘录"],
+      "resumeEvidence": ["对应简历证据"],
+      "scoringReason": "评分依据",
+      "matchReason": "匹配原因",
+      "deductionReason": "扣分原因；没有明显扣分时也要说明",
+      "finalScore": 0
+    },
+    {
+      "id": "productCapability",
+      "key": "productCapability",
+      "title": "产品能力匹配度",
+      "scorePercent": 0,
+      "weight": 0.3,
+      "summary": "本维度摘要",
+      "jdEvidence": ["本次JD要求摘录"],
+      "resumeEvidence": ["对应简历证据"],
+      "scoringReason": "评分依据",
+      "matchReason": "匹配原因",
+      "deductionReason": "扣分原因；没有明显扣分时也要说明",
+      "finalScore": 0
+    },
+    {
+      "id": "projectExperience",
+      "key": "projectExperience",
+      "title": "项目经验匹配度",
+      "scorePercent": 0,
+      "weight": 0.3,
+      "summary": "本维度摘要",
+      "jdEvidence": ["本次JD要求摘录"],
+      "resumeEvidence": ["对应简历证据"],
+      "scoringReason": "评分依据",
+      "matchReason": "匹配原因",
+      "deductionReason": "扣分原因；没有明显扣分时也要说明",
+      "finalScore": 0
+    },
+    {
+      "id": "bonusPotential",
+      "key": "bonusPotential",
+      "title": "岗位加分匹配度",
+      "scorePercent": 0,
+      "weight": 0.15,
+      "summary": "本维度摘要",
+      "jdEvidence": ["本次JD要求摘录"],
+      "resumeEvidence": ["对应简历证据"],
+      "scoringReason": "评分依据",
+      "matchReason": "匹配原因",
+      "deductionReason": "扣分原因；没有明显扣分时也要说明",
+      "finalScore": 0
+    }
+  ]
+}`;
 }
 
 export function buildUserPrompt(params: {

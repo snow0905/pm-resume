@@ -11,9 +11,10 @@ import { resumeMatchProfile } from "@/data/resumeMatchProfile";
 import { validateMatchResult } from "@/lib/schemas/matchResultSchema";
 
 // ================================================================
-// 模式开关：true = mock，false = 真实 AI
+// 模式开关：仅显式配置 USE_MOCK_MATCH=true 时使用 mock。
+// 未配置或其他值均调用真实 AI，避免生产环境误返回固定样例。
 // ================================================================
-const USE_MOCK_MATCH = true;
+const USE_MOCK_MATCH = process.env.USE_MOCK_MATCH === "true";
 
 // ================================================================
 // Mock 结果（仅开发调试用）

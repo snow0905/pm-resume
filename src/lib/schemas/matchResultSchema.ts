@@ -24,7 +24,10 @@ export const matchDimensionSchema = z.object({
 
 export const matchResultSchema = z.object({
   overallScore: z.number().min(0).max(100),
-  conclusion: z.string().min(1).max(300),
+  conclusion: z
+    .string()
+    .min(1)
+    .transform((value) => value.slice(0, 300)),
   highlights: z.array(z.string()).min(2).max(3),
   concerns: z.array(z.string()).min(1).max(2),
   dimensions: z.array(matchDimensionSchema).length(4),

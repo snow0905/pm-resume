@@ -3,6 +3,7 @@ import { spawn } from "node:child_process";
 import { createServer } from "node:http";
 import test from "node:test";
 import { buildSystemPrompt } from "../src/lib/prompts/jobMatchPrompt.ts";
+import { validateMatchResult } from "../src/lib/schemas/matchResultSchema.ts";
 
 const host = "127.0.0.1";
 const port = 3117;
@@ -46,6 +47,32 @@ test("the model prompt supplies the exact JSON response contract", () => {
       `prompt must define the ${requiredField} JSON field`,
     );
   }
+});
+
+test("an overlong model conclusion is trimmed instead of rejecting the report", () => {
+  const result = validateMatchResult({
+    overallScore: 50,
+    conclusion: "结".repeat(301),
+    highlights: ["亮点1", "亮点2"],
+    concerns: ["待确认点"],
+    dimensions: Array.from({ length: 4 }, (_, index) => ({
+      id: `dimension-${index}`,
+      key: `dimension-${index}`,
+      title: `维度${index}`,
+      scorePercent: 50,
+      weight: 0.25,
+      summary: "摘要",
+      jdEvidence: ["JD证据"],
+      resumeEvidence: ["简历证据"],
+      scoringReason: "评分依据",
+      matchReason: "匹配原因",
+      deductionReason: "扣分原因",
+      finalScore: 50,
+    })),
+  });
+
+  assert.equal(result.valid, true);
+  assert.equal(result.data?.conclusion.length, 300);
 });
 
 test(
